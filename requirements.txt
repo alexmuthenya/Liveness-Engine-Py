@@ -3,4 +3,4 @@ uvicorn
 mediapipe
 opencv-python
 numpy
-python-multipartls -p
+python-multipart
