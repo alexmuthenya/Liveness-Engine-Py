@@ -62,6 +62,17 @@ def check_head_pose(image_data, challenge):
 @app.post("/verify-pose")
 async def verify(payload: ImagePayload):
     return check_head_pose(payload.image, payload.challenge)
+
+
+@app.get("/domain-expansion")
+async def unlimited_void():
+    return {
+        "user": "Gojo Satoru",
+        "technique": "Muryōkūsho (Unlimited Void)",
+        "status": "VOID_ACTIVE",
+        "perception": "Yowai mo.",
+        "ping_result": "Survived the void."
+    }
     
 if __name__ == "__main__":
     import uvicorn
