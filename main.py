@@ -3,18 +3,38 @@ from pydantic import BaseModel
 import cv2
 import numpy as np
 import base64
+import sys
 import mediapipe as mp
+import os
 from mediapipe.tasks import python
 from mediapipe.tasks.python import vision
 
 app = FastAPI()
 
+model_name = "face_landmarker.task"
+container_path = os.path.join("/app", model_name)
+render_git_path = os.path.join("/appgit", model_name)
+local_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), model_name)
+
+if os.path.exists(container_path):
+    model_path = container_path
+elif os.path.exists(render_git_path):
+    model_path = render_git_path
+elif os.path.exists(local_path):
+    model_path = local_path
+else:
+    model_path = model_name
+
+print(f"INFO: System-validated model path: {model_path}", file=sys.stderr)
 #Initialize the Task Landmarker
-base_options = python.BaseOptions(model_asset_path='face_landmarker.task')
-options = vision.FaceLandmarkerOptions(base_options=base_options,
-                                       output_face_blendshapes=True,
-output_facial_transformation_matrixes=True,
-                                       num_faces=1)
+base_options = python.BaseOptions(model_asset_path=model_path)
+options = vision.FaceLandmarkerOptions(
+    base_options=base_options,
+    running_mode=vision.RunningMode.IMAGE,
+    output_face_blendshapes=True,
+    output_facial_transformation_matrixes=True,
+    num_faces=1,
+)
 detector = vision.FaceLandmarker.create_from_options(options)
 
 class ImagePayload(BaseModel):
